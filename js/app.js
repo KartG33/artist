@@ -257,7 +257,7 @@ async function send() {
       apiKey: S.apiKey,
       model: activeModel,
       systemPrompt,
-      messages: chat.messages.slice(0, -0) // all including just-added user msg
+      messages: chat.messages // all messages including just-added user msg
         .map(m => ({ role: m.role, text: m.text }))
     });
 

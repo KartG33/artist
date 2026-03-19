@@ -1,16 +1,26 @@
 // js/api.js — Gemini API
 
+// Models with "thinking: true" don't accept temperature param — causes 400
+const THINKING_MODELS = [
+  'gemini-2.5-flash', 'gemini-2.5-flash-lite', 'gemini-2.5-pro',
+  'gemini-3-flash-preview', 'gemini-3-pro-preview',
+  'gemini-3.1-pro-preview', 'gemini-3.1-flash-lite-preview',
+  'gemini-flash-latest', 'gemini-flash-lite-latest', 'gemini-pro-latest',
+];
+
 export async function callGemini({ apiKey, model, systemPrompt, messages }) {
   const contents = messages.map(m => ({
     role: m.role === 'user' ? 'user' : 'model',
     parts: [{ text: m.text }]
   }));
 
+  const isThinking = THINKING_MODELS.includes(model);
+
   const body = {
     system_instruction: { parts: [{ text: systemPrompt }] },
     contents,
     generationConfig: {
-      temperature: 1,
+      ...(isThinking ? {} : { temperature: 1 }),
       maxOutputTokens: 8192,
     }
   };
