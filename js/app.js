@@ -2,6 +2,7 @@
 
 import {
   loadState, saveState, saveChats, getState,
+  AVAILABLE_MODELS,
   getChat, getCurrentChat, createChat, deleteChat, renameChat,
   addMessage, addGlobalBanned, removeGlobalBanned,
   addChatBanned, removeChatBanned, addCustomCommand, removeCustomCommand,
@@ -251,9 +252,10 @@ async function send() {
     const chat = getChat(chatId);
     const systemPrompt = buildSystemPrompt(chatId);
 
+    const activeModel = document.getElementById('modelInlineSelect')?.value || S.model;
     const response = await callGemini({
       apiKey: S.apiKey,
-      model: S.model,
+      model: activeModel,
       systemPrompt,
       messages: chat.messages.slice(0, -0) // all including just-added user msg
         .map(m => ({ role: m.role, text: m.text }))
@@ -261,7 +263,7 @@ async function send() {
 
     hideTyping();
     addMessage(chatId, 'model', response);
-    appendMessage({ role: 'model', text: response }, handleRevise, handleRegen, handleCopy);
+    appendMessage({ role: 'model', text: response, model: activeModel }, handleRevise, handleRegen, handleCopy);
     refreshSidebar();
   } catch(err) {
     hideTyping();
@@ -335,12 +337,33 @@ function setupApiModal() {
   };
 }
 
+
+function syncModelInlineSelect() {
+  const sel = document.getElementById('modelInlineSelect');
+  if (!sel) return;
+  sel.innerHTML = '';
+  AVAILABLE_MODELS.forEach(m => {
+    const opt = document.createElement('option');
+    opt.value = m.value;
+    opt.textContent = m.label;
+    if (m.value === S.model) opt.selected = true;
+    sel.appendChild(opt);
+  });
+  sel.onchange = () => {
+    S.model = sel.value;
+    saveState();
+    syncApiFields();
+  };
+}
+
 function syncApiFields() {
   // API modal
   const kf = document.getElementById('apiKeyField');
   const mf = document.getElementById('modelField');
   if (kf) kf.value = S.apiKey || '';
   if (mf) mf.value = S.model || 'gemini-2.0-flash';
+
+  syncModelInlineSelect();
 
   // Settings API tab
   const gsK = document.getElementById('gsApiKeyField');

@@ -77,6 +77,18 @@ export const DEFAULT_COMMANDS = [
   { id: 'REVISE',     name: 'REVISE',     desc: 'Правки',        template: 'REVISE: [опиши что изменить]' },
 ];
 
+
+// ---- AVAILABLE MODELS ----
+export const AVAILABLE_MODELS = [
+  { value: 'gemini-2.0-flash',       label: '2.0-flash' },
+  { value: 'gemini-2.0-flash-lite',  label: '2.0-flash-lite' },
+  { value: 'gemini-2.5-flash',       label: '2.5-flash' },
+  { value: 'gemini-2.5-flash-lite',  label: '2.5-flash-lite' },
+  { value: 'gemini-2.5-pro',         label: '2.5-pro' },
+  { value: 'gemini-3-flash-preview', label: '3-flash' },
+  { value: 'gemini-3.1-pro-preview', label: '3.1-pro' },
+];
+
 // ---- STATE ----
 const state = {
   apiKey: '',

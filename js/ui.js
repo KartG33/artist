@@ -63,7 +63,8 @@ function makeMsgEl(msg, idx, onRevise, onRegen, onCopy) {
   const div = document.createElement('div');
   div.className = `msg ${msg.role}`;
 
-  const roleLabel = msg.role === 'user' ? '▸ ВЫ' : '◆ ADP-FC';
+  const modelBadge = (msg.role === 'model' && msg.model) ? ` <span class="msg-model-badge">${msg.model.replace('gemini-','').replace('-preview','')}</span>` : '';
+  const roleLabel = msg.role === 'user' ? '▸ ВЫ' : `◆ ADP-FC${modelBadge}`;
   let html = `<div class="msg-role">${roleLabel}</div>
     <div class="msg-bubble">${formatText(msg.text)}</div>`;
 

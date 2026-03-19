@@ -635,3 +635,31 @@ body {
   .input-area { padding: 8px 10px 10px; }
   .modal-wide { width: 96vw; }
 }
+
+/* ---- MODEL INLINE SELECT ---- */
+.model-inline-select {
+  background: var(--bg3);
+  border: 1px solid var(--border2);
+  color: var(--accent);
+  font-family: var(--mono);
+  font-size: 11px;
+  border-radius: var(--radius-sm);
+  padding: 0 6px;
+  height: 32px;
+  cursor: pointer;
+  outline: none;
+  flex-shrink: 0;
+  transition: border-color 0.15s;
+}
+.model-inline-select:hover { border-color: var(--accent); }
+.model-inline-select:focus { border-color: var(--accent); }
+
+/* ---- MODEL BADGE IN MESSAGE ---- */
+.msg-model-badge {
+  font-size: 10px;
+  font-family: var(--mono);
+  color: var(--accent);
+  opacity: 0.8;
+  margin-left: 6px;
+  font-weight: 400;
+}
