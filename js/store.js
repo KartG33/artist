@@ -97,31 +97,27 @@ IMPORTANT: Always respond in English only, regardless of input language.
 
 // ---- DEFAULT COMMANDS ----
 export const DEFAULT_COMMANDS = [
-  { id: 'PROFILE', name: 'PROFILE', desc: 'Artist profile',  template: 'PROFILE: {artist}' },
-  { id: 'LYRICS',  name: 'LYRICS',  desc: 'Write lyrics',    template: 'LYRICS: {artist} / topic: ' },
-  { id: 'STYLE',   name: 'STYLE',   desc: 'Suno style tags', template: 'STYLE: {artist}' },
-  { id: 'EXPAND',  name: 'EXPAND',  desc: 'From reference',  template: 'EXPAND: {artist} / ref: ' },
-  { id: 'IDEAS',   name: 'IDEAS',   desc: 'Concepts',        template: 'IDEAS: {artist}' },
-  { id: 'FULL',    name: 'FULL',    desc: 'Full cycle',      template: 'FULL: {artist} / topic: ' },
-  { id: 'REVISE',  name: 'REVISE',  desc: 'Revise last',     template: 'REVISE: ' },
+  { id: 'PROFILE', name: 'PROFILE', desc: 'Artist profile', template: 'PROFILE: {artist}' },
+  { id: 'LYRICS', name: 'LYRICS', desc: 'Write lyrics', template: 'LYRICS: {artist} / topic: ' },
+  { id: 'STYLE', name: 'STYLE', desc: 'Suno style tags', template: 'STYLE: {artist}' },
+  { id: 'EXPAND', name: 'EXPAND', desc: 'From reference', template: 'EXPAND: {artist} / ref: ' },
+  { id: 'IDEAS', name: 'IDEAS', desc: 'Concepts', template: 'IDEAS: {artist}' },
+  { id: 'FULL', name: 'FULL', desc: 'Full cycle', template: 'FULL: {artist} / topic: ' },
+  { id: 'REVISE', name: 'REVISE', desc: 'Revise last', template: 'REVISE: ' },
 ];
 
 
 // ---- AVAILABLE MODELS ----
 export const AVAILABLE_MODELS = [
-  { value: 'gemini-2.0-flash',       label: '2.0-flash' },
-  { value: 'gemini-2.0-flash-lite',  label: '2.0-flash-lite' },
-  { value: 'gemini-2.5-flash',       label: '2.5-flash' },
-  { value: 'gemini-2.5-flash-lite',  label: '2.5-flash-lite' },
-  { value: 'gemini-2.5-pro',         label: '2.5-pro' },
-  { value: 'gemini-3-flash-preview', label: '3-flash' },
-  { value: 'gemini-3.1-pro-preview', label: '3.1-pro' },
+  { value: 'gemini-1.5-flash-latest', label: '1.5 Flash (быстрая)' },
+  { value: 'gemini-1.5-pro-latest', label: '1.5 Pro (мощная)' },
+  { value: 'gemini-pro', label: '1.0 Pro (стандарт)' },
 ];
 
 // ---- STATE ----
 const state = {
   apiKey: '',
-  model: 'gemini-2.0-flash',
+  model: 'gemini-1.5-flash-latest',
   systemPrompt: DEFAULT_SYSTEM_PROMPT,
   globalBanned: [],   // string[]
   customCommands: [], // {id, name, desc, template}[]
@@ -132,22 +128,22 @@ const state = {
 // ---- LOAD ----
 export function loadState() {
   logger.info('Loading state from localStorage.');
-  state.apiKey        = ls('adpfc_key')     || '';
-  state.model         = ls('adpfc_model')   || 'gemini-2.0-flash';
-  state.systemPrompt  = ls('adpfc_prompt')  || DEFAULT_SYSTEM_PROMPT;
-  state.globalBanned  = lsJson('adpfc_banned') || [];
-  state.customCommands= lsJson('adpfc_customcmds') || [];
-  state.chats         = lsJson('adpfc_chats') || [];
+  state.apiKey = ls('adpfc_key') || '';
+  state.model = ls('adpfc_model') || 'gemini-1.5-flash-latest';
+  state.systemPrompt = ls('adpfc_prompt') || DEFAULT_SYSTEM_PROMPT;
+  state.globalBanned = lsJson('adpfc_banned') || [];
+  state.customCommands = lsJson('adpfc_customcmds') || [];
+  state.chats = lsJson('adpfc_chats') || [];
   logger.debug('State loaded:', { ...state, chats: `${state.chats.length} chats` });
 }
 
 export function saveState() {
   logger.info('Saving state to localStorage.');
-  lsSet('adpfc_key',       state.apiKey);
-  lsSet('adpfc_model',     state.model);
-  lsSet('adpfc_prompt',    state.systemPrompt);
-  lsSetJson('adpfc_banned',       state.globalBanned);
-  lsSetJson('adpfc_customcmds',   state.customCommands);
+  lsSet('adpfc_key', state.apiKey);
+  lsSet('adpfc_model', state.model);
+  lsSet('adpfc_prompt', state.systemPrompt);
+  lsSetJson('adpfc_banned', state.globalBanned);
+  lsSetJson('adpfc_customcmds', state.customCommands);
   // chats saved separately (can be large)
   saveChats();
 }
@@ -160,7 +156,7 @@ export function saveChats() {
   }));
   try {
     localStorage.setItem('adpfc_chats', JSON.stringify(trimmed));
-  } catch(e) {
+  } catch (e) {
     logger.error('Failed to save chats to localStorage:', e);
   }
 }
@@ -300,7 +296,7 @@ export function parseBannedInput(raw) {
       logger.debug(`Parsed ${words.length} words from JSON array.`);
       return words;
     }
-  } catch(e) {}
+  } catch (e) { }
   // Try comma-separated
   if (raw.includes(',')) {
     words = raw.split(',').map(w => w.trim().replace(/["\[\]]/g, '').toLowerCase()).filter(Boolean);
@@ -314,7 +310,7 @@ export function parseBannedInput(raw) {
 }
 
 // ---- HELPERS ----
-function ls(key) { try { return localStorage.getItem(key); } catch(e) { logger.error(`localStorage getItem failed for key "${key}":`, e); return null; } }
-function lsSet(key, val) { try { localStorage.setItem(key, val || ''); } catch(e) { logger.error(`localStorage setItem failed for key "${key}":`, e); } }
-function lsJson(key) { try { return JSON.parse(localStorage.getItem(key)); } catch(e) { /* logger.debug(`localStorage getItem (JSON) failed for key "${key}":`, e); */ return null; } }
-function lsSetJson(key, val) { try { localStorage.setItem(key, JSON.stringify(val)); } catch(e) { logger.error(`localStorage setItem (JSON) failed for key "${key}":`, e); } }
+function ls(key) { try { return localStorage.getItem(key); } catch (e) { logger.error(`localStorage getItem failed for key "${key}":`, e); return null; } }
+function lsSet(key, val) { try { localStorage.setItem(key, val || ''); } catch (e) { logger.error(`localStorage setItem failed for key "${key}":`, e); } }
+function lsJson(key) { try { return JSON.parse(localStorage.getItem(key)); } catch (e) { /* logger.debug(`localStorage getItem (JSON) failed for key "${key}":`, e); */ return null; } }
+function lsSetJson(key, val) { try { localStorage.setItem(key, JSON.stringify(val)); } catch (e) { logger.error(`localStorage setItem (JSON) failed for key "${key}":`, e); } }

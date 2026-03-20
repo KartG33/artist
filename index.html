@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="ru">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
@@ -11,286 +12,306 @@
   <link rel="apple-touch-icon" href="icons/icon-192.png">
   <title>Artist</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <link
+    href="https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Syne:wght@400;600;700;800&display=swap"
+    rel="stylesheet">
   <link rel="stylesheet" href="css/main.css">
 </head>
+
 <body>
 
-<div id="app">
-  <!-- HEADER -->
-  <header class="header" id="header">
-    <button class="icon-btn" id="burgerBtn" title="Меню">
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
-    </button>
-    <div class="logo">ADP<span class="logo-dash">—</span>FC <em>v16</em></div>
-    <div class="artist-header-wrap">
-      <input class="artist-header-input" id="artistInput" placeholder="Исполнитель…" type="text" autocomplete="off">
-    </div>
-    <div class="header-spacer"></div>
-    <button class="header-btn" id="chatSettingsBtn" title="Настройки чата" style="display:none">
-      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M4.93 4.93a10 10 0 0 0 0 14.14"/></svg>
-      Чат
-    </button>
-    <button class="header-btn" id="globalSettingsBtn" title="Настройки">
-      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M4.93 4.93a10 10 0 0 0 0 14.14"/></svg>
-      Настройки
-    </button>
-    <button class="new-chat-btn" id="newChatBtn">+ Чат</button>
-  </header>
+  <div id="app">
+    <!-- HEADER -->
+    <header class="header" id="header">
+      <button class="icon-btn" id="burgerBtn" title="Меню">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+          <line x1="3" y1="6" x2="21" y2="6" />
+          <line x1="3" y1="12" x2="21" y2="12" />
+          <line x1="3" y1="18" x2="21" y2="18" />
+        </svg>
+      </button>
+      <div class="logo">ADP<span class="logo-dash">—</span>FC <em>v16</em></div>
+      <div class="artist-header-wrap">
+        <input class="artist-header-input" id="artistInput" placeholder="Исполнитель…" type="text" autocomplete="off">
+      </div>
+      <div class="header-spacer"></div>
+      <button class="header-btn" id="chatSettingsBtn" title="Настройки чата" style="display:none">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="3" />
+          <path d="M19.07 4.93a10 10 0 0 1 0 14.14M4.93 4.93a10 10 0 0 0 0 14.14" />
+        </svg>
+        Чат
+      </button>
+      <button class="header-btn" id="globalSettingsBtn" title="Настройки">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="3" />
+          <path d="M19.07 4.93a10 10 0 0 1 0 14.14M4.93 4.93a10 10 0 0 0 0 14.14" />
+        </svg>
+        Настройки
+      </button>
+      <button class="new-chat-btn" id="newChatBtn">+ Чат</button>
+    </header>
 
-  <!-- SIDEBAR -->
-  <aside class="sidebar" id="sidebar">
-    <div class="sidebar-section">
-      <div class="section-label">Команды</div>
-      <div class="cmd-grid" id="cmdGrid">
-        <!-- Filled by JS -->
+    <!-- SIDEBAR -->
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-section">
+        <div class="section-label">Команды</div>
+        <div class="cmd-grid" id="cmdGrid">
+          <!-- Filled by JS -->
+        </div>
+      </div>
+
+      <div class="sidebar-section"
+        style="border-bottom:none;flex:1;overflow:hidden;display:flex;flex-direction:column;">
+        <div class="section-label" style="display:flex;align-items:center;justify-content:space-between;">
+          История
+          <div style="display:flex;gap:4px;">
+            <button class="mini-btn" id="exportHistoryBtn" title="Экспорт истории">↑ JSON</button>
+            <label class="mini-btn" title="Импорт истории" style="cursor:pointer;">
+              ↓ JSON<input type="file" accept=".json" id="importHistoryInput" style="display:none">
+            </label>
+          </div>
+        </div>
+        <div class="history-list" id="historyList"></div>
+      </div>
+    </aside>
+
+    <!-- OVERLAY for mobile sidebar -->
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+    <!-- MAIN -->
+    <main class="main" id="main">
+      <div class="messages" id="messages">
+        <div class="welcome" id="welcome">
+          <div class="welcome-glyph">◈</div>
+          <div class="welcome-title">Artist</div>
+          <div class="welcome-sub">Студия создания текстов и Suno/Udio промптов на базе Gemini</div>
+          <div class="welcome-cards">
+            <div class="welcome-card">
+              <div class="wc-icon">①</div>
+              <div>Введи исполнителя в поле вверху</div>
+            </div>
+            <div class="welcome-card">
+              <div class="wc-icon">②</div>
+              <div>Нажми команду в боковой панели</div>
+            </div>
+            <div class="welcome-card">
+              <div class="wc-icon">③</div>
+              <div>Или просто напиши в чат</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="input-area">
+        <div class="input-row">
+          <textarea class="msg-textarea" id="msgTextarea"
+            placeholder="Напиши команду или вопрос… (Enter — отправить, Shift+Enter — новая строка)"
+            rows="1"></textarea>
+          <select class="model-inline-select" id="modelInlineSelect" title="Модель"></select>
+          <button class="send-btn" id="sendBtn" disabled>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+              stroke-linecap="round" stroke-linejoin="round">
+              <line x1="22" y1="2" x2="11" y2="13" />
+              <polygon points="22 2 15 22 11 13 2 9 22 2" />
+            </svg>
+          </button>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <!-- ======= MODALS ======= -->
+
+  <!-- API KEY MODAL -->
+  <div class="modal-overlay hidden" id="apiModal">
+    <div class="modal">
+      <div class="modal-header">
+        <div class="modal-title">🔑 Gemini API Key</div>
+      </div>
+      <div class="modal-body">
+        <p class="modal-desc">Ключ хранится только в браузере (localStorage). Получить бесплатно: <a
+            href="https://aistudio.google.com/app/apikey" target="_blank">aistudio.google.com</a></p>
+        <label class="field-label">API Key</label>
+        <input class="field-input" id="apiKeyField" type="password" placeholder="AIza...">
+        <label class="field-label">Модель</label>
+        <select class="field-input field-select" id="modelField">
+          <option value="gemini-1.5-flash-latest">1.5 Flash (быстрая)</option>
+          <option value="gemini-1.5-pro-latest">1.5 Pro (мощная)</option>
+          <option value="gemini-pro">1.0 Pro (стандарт)</option>
+        </select>
+      </div>
+      <div class="modal-footer">
+        <button class="btn-ghost" id="apiCancelBtn">Отмена</button>
+        <button class="btn-primary" id="apiSaveBtn">Сохранить</button>
       </div>
     </div>
+  </div>
 
-    <div class="sidebar-section" style="border-bottom:none;flex:1;overflow:hidden;display:flex;flex-direction:column;">
-      <div class="section-label" style="display:flex;align-items:center;justify-content:space-between;">
-        История
-        <div style="display:flex;gap:4px;">
-          <button class="mini-btn" id="exportHistoryBtn" title="Экспорт истории">↑ JSON</button>
-          <label class="mini-btn" title="Импорт истории" style="cursor:pointer;">
-            ↓ JSON<input type="file" accept=".json" id="importHistoryInput" style="display:none">
+  <!-- GLOBAL SETTINGS MODAL -->
+  <div class="modal-overlay hidden" id="globalSettingsModal">
+    <div class="modal modal-wide">
+      <div class="modal-header">
+        <div class="modal-title">⚙ Глобальные настройки</div>
+        <button class="modal-close" id="closeGlobalSettings">✕</button>
+      </div>
+      <div class="modal-tabs">
+        <button class="tab-btn active" data-tab="prompt">Системный промпт</button>
+        <button class="tab-btn" data-tab="banned">Banned Words</button>
+        <button class="tab-btn" data-tab="commands">Команды</button>
+        <button class="tab-btn" data-tab="api">API / Модель</button>
+      </div>
+      <div class="modal-body tab-content" id="gsTab-prompt">
+        <label class="field-label">Системный промпт (применяется ко всем чатам)</label>
+        <textarea class="field-textarea tall" id="globalPromptField"></textarea>
+        <div class="btn-row">
+          <button class="btn-ghost" id="resetPromptBtn">Сбросить к дефолту</button>
+          <button class="btn-primary" id="savePromptBtn">Сохранить</button>
+        </div>
+      </div>
+      <div class="modal-body tab-content hidden" id="gsTab-banned">
+        <label class="field-label">Глобальный список (применяется везде)</label>
+        <div class="banned-tags-wrap" id="globalBannedTags"></div>
+        <div class="banned-input-row">
+          <input class="field-input" id="globalBannedInput" placeholder="Слово или фраза…" type="text">
+          <button class="btn-primary" id="addGlobalBannedBtn">Добавить</button>
+        </div>
+        <div class="divider-label">Конвертер форматов</div>
+        <label class="field-label">Вставь JSON-массив, список через запятую, построчный список — распознаю
+          автоматически</label>
+        <textarea class="field-textarea" id="bannedConverterInput"
+          placeholder='["слово1", "слово2"]&#10;или: слово1, слово2, слово3&#10;или построчно'></textarea>
+        <div class="btn-row">
+          <button class="btn-ghost" id="exportBannedBtn">↑ Экспорт JSON</button>
+          <label class="btn-ghost" style="cursor:pointer;">↓ Импорт JSON<input type="file" accept=".json"
+              id="importBannedInput" style="display:none"></label>
+          <button class="btn-primary" id="convertBannedBtn">Распознать и добавить</button>
+        </div>
+      </div>
+      <div class="modal-body tab-content hidden" id="gsTab-commands">
+        <div class="custom-cmd-list" id="customCmdList"></div>
+        <div class="divider-label">Новая команда</div>
+        <div class="cmd-editor">
+          <input class="field-input" id="newCmdName" placeholder="Название кнопки (напр. HOOK)">
+          <textarea class="field-textarea" id="newCmdTemplate"
+            placeholder="Шаблон. Используй {artist}, {topic}, {lyrics}&#10;Пример: GENERATE: {artist} / тема: {topic}, но только бридж, без куплетов"></textarea>
+          <button class="btn-primary" id="addCustomCmdBtn">Добавить команду</button>
+        </div>
+      </div>
+      <div class="modal-body tab-content hidden" id="gsTab-api">
+        <label class="field-label">API Key</label>
+        <input class="field-input" id="gsApiKeyField" type="password" placeholder="AIza...">
+        <label class="field-label">Модель</label>
+        <select class="field-input field-select" id="gsModelField">
+          <option value="gemini-1.5-flash-latest">1.5 Flash (быстрая)</option>
+          <option value="gemini-1.5-pro-latest">1.5 Pro (мощная)</option>
+          <option value="gemini-pro">1.0 Pro (стандарт)</option>
+        </select>
+        <div class="btn-row">
+          <button class="btn-primary" id="saveApiFromSettingsBtn">Сохранить</button>
+        </div>
+        <div style="margin-top: 20px; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 15px;">
+          <label class="field-label">Отладка</label>
+          <button class="btn-ghost" id="exportLogsBtn" style="width: 100%;">🐞 Скачать системный лог</button>
+        </div>
+        <div class="api-status-row" id="apiStatusRow"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CHAT SETTINGS MODAL -->
+  <div class="modal-overlay hidden" id="chatSettingsModal">
+    <div class="modal modal-wide">
+      <div class="modal-header">
+        <div class="modal-title">⚙ Настройки чата</div>
+        <button class="modal-close" id="closeChatSettings">✕</button>
+      </div>
+      <div class="modal-tabs">
+        <button class="tab-btn active" data-tab="chat-prompt">Промпт чата</button>
+        <button class="tab-btn" data-tab="chat-banned">Banned Words</button>
+        <button class="tab-btn" data-tab="chat-export">Экспорт</button>
+      </div>
+      <div class="modal-body tab-content" id="csTab-chat-prompt">
+        <label class="field-label">Системный промпт для этого чата (переопределяет глобальный)</label>
+        <div class="toggle-row">
+          <label class="toggle-label">
+            <input type="checkbox" id="chatPromptOverrideToggle"> Использовать свой промпт для этого чата
           </label>
         </div>
+        <textarea class="field-textarea tall" id="chatPromptField"
+          placeholder="Оставь пустым — использует глобальный промпт"></textarea>
+        <div class="btn-row">
+          <button class="btn-ghost" id="copyChatGlobalPromptBtn">Скопировать глобальный как основу</button>
+          <button class="btn-primary" id="saveChatPromptBtn">Сохранить</button>
+        </div>
       </div>
-      <div class="history-list" id="historyList"></div>
-    </div>
-  </aside>
-
-  <!-- OVERLAY for mobile sidebar -->
-  <div class="sidebar-overlay" id="sidebarOverlay"></div>
-
-  <!-- MAIN -->
-  <main class="main" id="main">
-    <div class="messages" id="messages">
-      <div class="welcome" id="welcome">
-        <div class="welcome-glyph">◈</div>
-        <div class="welcome-title">Artist</div>
-        <div class="welcome-sub">Студия создания текстов и Suno/Udio промптов на базе Gemini</div>
-        <div class="welcome-cards">
-          <div class="welcome-card">
-            <div class="wc-icon">①</div>
-            <div>Введи исполнителя в поле вверху</div>
-          </div>
-          <div class="welcome-card">
-            <div class="wc-icon">②</div>
-            <div>Нажми команду в боковой панели</div>
-          </div>
-          <div class="welcome-card">
-            <div class="wc-icon">③</div>
-            <div>Или просто напиши в чат</div>
-          </div>
+      <div class="modal-body tab-content hidden" id="csTab-chat-banned">
+        <label class="field-label">Дополнительные Banned Words только для этого чата</label>
+        <div class="banned-tags-wrap" id="chatBannedTags"></div>
+        <div class="banned-input-row">
+          <input class="field-input" id="chatBannedInput" placeholder="Слово или фраза…" type="text">
+          <button class="btn-primary" id="addChatBannedBtn">Добавить</button>
+        </div>
+        <div class="divider-label">Конвертер форматов</div>
+        <textarea class="field-textarea" id="chatBannedConverterInput"
+          placeholder='["слово1", "слово2"] или слово1, слово2'></textarea>
+        <div class="btn-row">
+          <button class="btn-primary" id="convertChatBannedBtn">Распознать и добавить</button>
+        </div>
+      </div>
+      <div class="modal-body tab-content hidden" id="csTab-chat-export">
+        <label class="field-label">Экспорт текущего чата</label>
+        <div class="btn-row" style="flex-wrap:wrap;gap:10px;margin-top:8px;">
+          <button class="btn-ghost" id="exportChatTxtBtn">↑ Скачать .txt</button>
+          <button class="btn-ghost" id="exportChatJsonBtn">↑ Скачать .json</button>
         </div>
       </div>
     </div>
-
-    <div class="input-area">
-      <div class="input-row">
-        <textarea class="msg-textarea" id="msgTextarea" placeholder="Напиши команду или вопрос… (Enter — отправить, Shift+Enter — новая строка)" rows="1"></textarea>
-        <select class="model-inline-select" id="modelInlineSelect" title="Модель"></select>
-        <button class="send-btn" id="sendBtn" disabled>
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
-        </button>
-      </div>
-    </div>
-  </main>
-</div>
-
-<!-- ======= MODALS ======= -->
-
-<!-- API KEY MODAL -->
-<div class="modal-overlay hidden" id="apiModal">
-  <div class="modal">
-    <div class="modal-header">
-      <div class="modal-title">🔑 Gemini API Key</div>
-    </div>
-    <div class="modal-body">
-      <p class="modal-desc">Ключ хранится только в браузере (localStorage). Получить бесплатно: <a href="https://aistudio.google.com/app/apikey" target="_blank">aistudio.google.com</a></p>
-      <label class="field-label">API Key</label>
-      <input class="field-input" id="apiKeyField" type="password" placeholder="AIza...">
-      <label class="field-label">Модель</label>
-      <select class="field-input field-select" id="modelField">
-        <option value="gemini-2.0-flash">gemini-2.0-flash — быстрая ✦</option>
-        <option value="gemini-2.0-flash-lite">gemini-2.0-flash-lite — лёгкая</option>
-        <option value="gemini-2.5-flash">gemini-2.5-flash — мощная + быстрая</option>
-        <option value="gemini-2.5-flash-lite">gemini-2.5-flash-lite — лёгкая</option>
-        <option value="gemini-2.5-pro">gemini-2.5-pro — максимум</option>
-        <option value="gemini-3-flash-preview">gemini-3-flash-preview — экспер.</option>
-        <option value="gemini-3.1-pro-preview">gemini-3.1-pro-preview — экспер.</option>
-      </select>
-    </div>
-    <div class="modal-footer">
-      <button class="btn-ghost" id="apiCancelBtn">Отмена</button>
-      <button class="btn-primary" id="apiSaveBtn">Сохранить</button>
-    </div>
   </div>
-</div>
 
-<!-- GLOBAL SETTINGS MODAL -->
-<div class="modal-overlay hidden" id="globalSettingsModal">
-  <div class="modal modal-wide">
-    <div class="modal-header">
-      <div class="modal-title">⚙ Глобальные настройки</div>
-      <button class="modal-close" id="closeGlobalSettings">✕</button>
-    </div>
-    <div class="modal-tabs">
-      <button class="tab-btn active" data-tab="prompt">Системный промпт</button>
-      <button class="tab-btn" data-tab="banned">Banned Words</button>
-      <button class="tab-btn" data-tab="commands">Команды</button>
-      <button class="tab-btn" data-tab="api">API / Модель</button>
-    </div>
-    <div class="modal-body tab-content" id="gsTab-prompt">
-      <label class="field-label">Системный промпт (применяется ко всем чатам)</label>
-      <textarea class="field-textarea tall" id="globalPromptField"></textarea>
-      <div class="btn-row">
-        <button class="btn-ghost" id="resetPromptBtn">Сбросить к дефолту</button>
-        <button class="btn-primary" id="savePromptBtn">Сохранить</button>
+  <!-- RENAME MODAL -->
+  <div class="modal-overlay hidden" id="renameModal">
+    <div class="modal modal-sm">
+      <div class="modal-header">
+        <div class="modal-title">Переименовать чат</div>
       </div>
-    </div>
-    <div class="modal-body tab-content hidden" id="gsTab-banned">
-      <label class="field-label">Глобальный список (применяется везде)</label>
-      <div class="banned-tags-wrap" id="globalBannedTags"></div>
-      <div class="banned-input-row">
-        <input class="field-input" id="globalBannedInput" placeholder="Слово или фраза…" type="text">
-        <button class="btn-primary" id="addGlobalBannedBtn">Добавить</button>
+      <div class="modal-body">
+        <input class="field-input" id="renameInput" type="text" placeholder="Название чата">
       </div>
-      <div class="divider-label">Конвертер форматов</div>
-      <label class="field-label">Вставь JSON-массив, список через запятую, построчный список — распознаю автоматически</label>
-      <textarea class="field-textarea" id="bannedConverterInput" placeholder='["слово1", "слово2"]&#10;или: слово1, слово2, слово3&#10;или построчно'></textarea>
-      <div class="btn-row">
-        <button class="btn-ghost" id="exportBannedBtn">↑ Экспорт JSON</button>
-        <label class="btn-ghost" style="cursor:pointer;">↓ Импорт JSON<input type="file" accept=".json" id="importBannedInput" style="display:none"></label>
-        <button class="btn-primary" id="convertBannedBtn">Распознать и добавить</button>
-      </div>
-    </div>
-    <div class="modal-body tab-content hidden" id="gsTab-commands">
-      <div class="custom-cmd-list" id="customCmdList"></div>
-      <div class="divider-label">Новая команда</div>
-      <div class="cmd-editor">
-        <input class="field-input" id="newCmdName" placeholder="Название кнопки (напр. HOOK)">
-        <textarea class="field-textarea" id="newCmdTemplate" placeholder="Шаблон. Используй {artist}, {topic}, {lyrics}&#10;Пример: GENERATE: {artist} / тема: {topic}, но только бридж, без куплетов"></textarea>
-        <button class="btn-primary" id="addCustomCmdBtn">Добавить команду</button>
-      </div>
-    </div>
-    <div class="modal-body tab-content hidden" id="gsTab-api">
-      <label class="field-label">API Key</label>
-      <input class="field-input" id="gsApiKeyField" type="password" placeholder="AIza...">
-      <label class="field-label">Модель</label>
-      <select class="field-input field-select" id="gsModelField">
-        <option value="gemini-2.0-flash">gemini-2.0-flash — быстрая ✦</option>
-        <option value="gemini-2.0-flash-lite">gemini-2.0-flash-lite — лёгкая</option>
-        <option value="gemini-2.5-flash">gemini-2.5-flash — мощная + быстрая</option>
-        <option value="gemini-2.5-flash-lite">gemini-2.5-flash-lite — лёгкая</option>
-        <option value="gemini-2.5-pro">gemini-2.5-pro — максимум</option>
-        <option value="gemini-3-flash-preview">gemini-3-flash-preview — экспер.</option>
-        <option value="gemini-3.1-pro-preview">gemini-3.1-pro-preview — экспер.</option>
-      </select>
-      <div class="btn-row">
-        <button class="btn-primary" id="saveApiFromSettingsBtn">Сохранить</button>
-      </div>
-      <div style="margin-top: 20px; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 15px;">
-        <label class="field-label">Отладка</label>
-        <button class="btn-ghost" id="exportLogsBtn" style="width: 100%;">🐞 Скачать системный лог</button>
-      </div>
-      <div class="api-status-row" id="apiStatusRow"></div>
-    </div>
-  </div>
-</div>
-
-<!-- CHAT SETTINGS MODAL -->
-<div class="modal-overlay hidden" id="chatSettingsModal">
-  <div class="modal modal-wide">
-    <div class="modal-header">
-      <div class="modal-title">⚙ Настройки чата</div>
-      <button class="modal-close" id="closeChatSettings">✕</button>
-    </div>
-    <div class="modal-tabs">
-      <button class="tab-btn active" data-tab="chat-prompt">Промпт чата</button>
-      <button class="tab-btn" data-tab="chat-banned">Banned Words</button>
-      <button class="tab-btn" data-tab="chat-export">Экспорт</button>
-    </div>
-    <div class="modal-body tab-content" id="csTab-chat-prompt">
-      <label class="field-label">Системный промпт для этого чата (переопределяет глобальный)</label>
-      <div class="toggle-row">
-        <label class="toggle-label">
-          <input type="checkbox" id="chatPromptOverrideToggle"> Использовать свой промпт для этого чата
-        </label>
-      </div>
-      <textarea class="field-textarea tall" id="chatPromptField" placeholder="Оставь пустым — использует глобальный промпт"></textarea>
-      <div class="btn-row">
-        <button class="btn-ghost" id="copyChatGlobalPromptBtn">Скопировать глобальный как основу</button>
-        <button class="btn-primary" id="saveChatPromptBtn">Сохранить</button>
-      </div>
-    </div>
-    <div class="modal-body tab-content hidden" id="csTab-chat-banned">
-      <label class="field-label">Дополнительные Banned Words только для этого чата</label>
-      <div class="banned-tags-wrap" id="chatBannedTags"></div>
-      <div class="banned-input-row">
-        <input class="field-input" id="chatBannedInput" placeholder="Слово или фраза…" type="text">
-        <button class="btn-primary" id="addChatBannedBtn">Добавить</button>
-      </div>
-      <div class="divider-label">Конвертер форматов</div>
-      <textarea class="field-textarea" id="chatBannedConverterInput" placeholder='["слово1", "слово2"] или слово1, слово2'></textarea>
-      <div class="btn-row">
-        <button class="btn-primary" id="convertChatBannedBtn">Распознать и добавить</button>
-      </div>
-    </div>
-    <div class="modal-body tab-content hidden" id="csTab-chat-export">
-      <label class="field-label">Экспорт текущего чата</label>
-      <div class="btn-row" style="flex-wrap:wrap;gap:10px;margin-top:8px;">
-        <button class="btn-ghost" id="exportChatTxtBtn">↑ Скачать .txt</button>
-        <button class="btn-ghost" id="exportChatJsonBtn">↑ Скачать .json</button>
+      <div class="modal-footer">
+        <button class="btn-ghost" id="renameCancelBtn">Отмена</button>
+        <button class="btn-primary" id="renameSaveBtn">Сохранить</button>
       </div>
     </div>
   </div>
-</div>
 
-<!-- RENAME MODAL -->
-<div class="modal-overlay hidden" id="renameModal">
-  <div class="modal modal-sm">
-    <div class="modal-header">
-      <div class="modal-title">Переименовать чат</div>
-    </div>
-    <div class="modal-body">
-      <input class="field-input" id="renameInput" type="text" placeholder="Название чата">
-    </div>
-    <div class="modal-footer">
-      <button class="btn-ghost" id="renameCancelBtn">Отмена</button>
-      <button class="btn-primary" id="renameSaveBtn">Сохранить</button>
+  <!-- CONFIRM MODAL -->
+  <div class="modal-overlay hidden" id="confirmModal">
+    <div class="modal modal-sm">
+      <div class="modal-header">
+        <div class="modal-title" id="confirmTitle">Подтверждение</div>
+      </div>
+      <div class="modal-body">
+        <p class="modal-desc" id="confirmText"></p>
+      </div>
+      <div class="modal-footer">
+        <button class="btn-ghost" id="confirmCancelBtn">Отмена</button>
+        <button class="btn-danger" id="confirmOkBtn">Удалить</button>
+      </div>
     </div>
   </div>
-</div>
 
-<!-- CONFIRM MODAL -->
-<div class="modal-overlay hidden" id="confirmModal">
-  <div class="modal modal-sm">
-    <div class="modal-header">
-      <div class="modal-title" id="confirmTitle">Подтверждение</div>
-    </div>
-    <div class="modal-body">
-      <p class="modal-desc" id="confirmText"></p>
-    </div>
-    <div class="modal-footer">
-      <button class="btn-ghost" id="confirmCancelBtn">Отмена</button>
-      <button class="btn-danger" id="confirmOkBtn">Удалить</button>
-    </div>
-  </div>
-</div>
+  <!-- TOAST -->
+  <div class="toast-wrap" id="toastWrap"></div>
 
-<!-- TOAST -->
-<div class="toast-wrap" id="toastWrap"></div>
-
-<script type="module" src="js/app.js"></script>
-<script>
-  if ('serviceWorker' in navigator) {
-    window.addEventListener('load', () => {
-      navigator.serviceWorker.register('./sw.js').catch(() => {});
-    });
-  }
-</script>
+  <script type="module" src="js/app.js"></script>
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('./sw.js').catch(() => { });
+      });
+    }
+  </script>
 </body>
+
 </html>
