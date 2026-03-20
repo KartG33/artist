@@ -362,7 +362,7 @@ function syncApiFields() {
   const kf = document.getElementById('apiKeyField');
   const mf = document.getElementById('modelField');
   if (kf) kf.value = S.apiKey || '';
-  if (mf) mf.value = S.model || 'gemini-2.0-flash';
+  if (mf) mf.value = S.model || 'gemini-2.5-flash';
 
   syncModelInlineSelect();
 
@@ -370,7 +370,7 @@ function syncApiFields() {
   const gsK = document.getElementById('gsApiKeyField');
   const gsM = document.getElementById('gsModelField');
   if (gsK) gsK.value = S.apiKey || '';
-  if (gsM) gsM.value = S.model || 'gemini-2.0-flash';
+  if (gsM) gsM.value = S.model || 'gemini-2.5-flash';
 }
 
 // ============================================================

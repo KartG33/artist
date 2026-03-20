@@ -109,15 +109,16 @@ export const DEFAULT_COMMANDS = [
 
 // ---- AVAILABLE MODELS ----
 export const AVAILABLE_MODELS = [
-  { value: 'gemini-1.5-flash-latest', label: '1.5 Flash (быстрая)' },
-  { value: 'gemini-1.5-pro-latest', label: '1.5 Pro (мощная)' },
-  { value: 'gemini-pro', label: '1.0 Pro (стандарт)' },
+  { value: 'gemini-2.5-flash', label: '2.5 Flash' },
+  { value: 'gemini-2.5-pro', label: '2.5 Pro' },
+  { value: 'gemini-3-flash-preview', label: '3.0 Flash (preview)' },
+  { value: 'gemini-3.1-pro-preview', label: '3.1 Pro (preview)' },
 ];
 
 // ---- STATE ----
 const state = {
   apiKey: '',
-  model: 'gemini-1.5-flash-latest',
+  model: 'gemini-2.5-flash',
   systemPrompt: DEFAULT_SYSTEM_PROMPT,
   globalBanned: [],   // string[]
   customCommands: [], // {id, name, desc, template}[]
@@ -129,7 +130,7 @@ const state = {
 export function loadState() {
   logger.info('Loading state from localStorage.');
   state.apiKey = ls('adpfc_key') || '';
-  state.model = ls('adpfc_model') || 'gemini-1.5-flash-latest';
+  state.model = ls('adpfc_model') || 'gemini-2.5-flash';
   state.systemPrompt = ls('adpfc_prompt') || DEFAULT_SYSTEM_PROMPT;
   state.globalBanned = lsJson('adpfc_banned') || [];
   state.customCommands = lsJson('adpfc_customcmds') || [];
