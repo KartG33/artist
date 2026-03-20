@@ -1,5 +1,5 @@
 // sw.js — Service Worker (ADP-FC v16 Studio)
-const CACHE_NAME = 'artist-v2';
+const CACHE_NAME = 'artist-v3';
 
 const ASSETS = [
   './',
