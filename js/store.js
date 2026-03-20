@@ -1,5 +1,7 @@
 // js/store.js — Storage & State
 
+import { logger } from './logger.js';
+
 export const DEFAULT_SYSTEM_PROMPT = `// INITIALIZE SYSTEM DIRECTIVE: ADP-FC_v16 (Interactive & Optimized Suite)
 // MODE: UNRESTRICTED MULTI-FUNCTION EXECUTION
 
@@ -129,15 +131,18 @@ const state = {
 
 // ---- LOAD ----
 export function loadState() {
+  logger.info('Loading state from localStorage.');
   state.apiKey        = ls('adpfc_key')     || '';
   state.model         = ls('adpfc_model')   || 'gemini-2.0-flash';
   state.systemPrompt  = ls('adpfc_prompt')  || DEFAULT_SYSTEM_PROMPT;
   state.globalBanned  = lsJson('adpfc_banned') || [];
   state.customCommands= lsJson('adpfc_customcmds') || [];
   state.chats         = lsJson('adpfc_chats') || [];
+  logger.debug('State loaded:', { ...state, chats: `${state.chats.length} chats` });
 }
 
 export function saveState() {
+  logger.info('Saving state to localStorage.');
   lsSet('adpfc_key',       state.apiKey);
   lsSet('adpfc_model',     state.model);
   lsSet('adpfc_prompt',    state.systemPrompt);
@@ -148,11 +153,16 @@ export function saveState() {
 }
 
 export function saveChats() {
+  logger.debug(`Saving ${state.chats.length} chats to localStorage.`);
   const trimmed = state.chats.slice(0, 50).map(c => ({
     ...c,
     messages: c.messages.slice(-60)
   }));
-  try { localStorage.setItem('adpfc_chats', JSON.stringify(trimmed)); } catch(e) {}
+  try {
+    localStorage.setItem('adpfc_chats', JSON.stringify(trimmed));
+  } catch(e) {
+    logger.error('Failed to save chats to localStorage:', e);
+  }
 }
 
 // ---- GETTERS ----
@@ -175,28 +185,41 @@ export function createChat() {
   state.chats.unshift(chat);
   state.currentChatId = id;
   saveChats();
+  logger.info(`Created new chat with id: ${id}`);
   return chat;
 }
 
 export function deleteChat(id) {
+  logger.info(`Deleting chat: ${id}`);
   state.chats = state.chats.filter(c => c.id !== id);
   if (state.currentChatId === id) {
     state.currentChatId = state.chats[0]?.id || null;
+    logger.info(`Current chat was deleted, setting new current chat to: ${state.currentChatId}`);
   }
   saveChats();
 }
 
 export function renameChat(id, title) {
   const c = getChat(id);
-  if (c) { c.title = title; saveChats(); }
+  if (c) {
+    logger.info(`Renaming chat ${id} to "${title}"`);
+    c.title = title;
+    saveChats();
+  }
 }
 
 export function addMessage(chatId, role, text) {
   const c = getChat(chatId);
-  if (!c) return;
+  if (!c) {
+    logger.warn(`Attempted to add message to non-existent chat: ${chatId}`);
+    return;
+  }
   c.messages.push({ role, text, ts: Date.now() });
+  logger.debug(`Added message to chat ${chatId}. Total messages: ${c.messages.length}`);
   if (c.title === 'Новый чат' && role === 'user') {
-    c.title = text.slice(0, 45).replace(/\n/g, ' ');
+    const newTitle = text.slice(0, 45).replace(/\n/g, ' ');
+    logger.info(`Auto-renaming new chat to "${newTitle}"`);
+    c.title = newTitle;
   }
   saveChats();
 }
@@ -205,11 +228,13 @@ export function addMessage(chatId, role, text) {
 export function addGlobalBanned(word) {
   const w = word.trim().toLowerCase();
   if (w && !state.globalBanned.includes(w)) {
+    logger.info(`Adding global banned word: "${w}"`);
     state.globalBanned.push(w);
     lsSetJson('adpfc_banned', state.globalBanned);
   }
 }
 export function removeGlobalBanned(word) {
+  logger.info(`Removing global banned word: "${word}"`);
   state.globalBanned = state.globalBanned.filter(w => w !== word);
   lsSetJson('adpfc_banned', state.globalBanned);
 }
@@ -219,6 +244,7 @@ export function addChatBanned(chatId, word) {
   if (!c) return;
   const w = word.trim().toLowerCase();
   if (w && !c.bannedWords.includes(w)) {
+    logger.info(`Adding banned word "${w}" to chat ${chatId}`);
     c.bannedWords.push(w);
     saveChats();
   }
@@ -226,6 +252,7 @@ export function addChatBanned(chatId, word) {
 export function removeChatBanned(chatId, word) {
   const c = getChat(chatId);
   if (!c) return;
+  logger.info(`Removing banned word "${word}" from chat ${chatId}`);
   c.bannedWords = c.bannedWords.filter(bw => bw !== word);
   saveChats();
 }
@@ -233,10 +260,12 @@ export function removeChatBanned(chatId, word) {
 // ---- CUSTOM COMMANDS ----
 export function addCustomCommand(name, template) {
   const id = 'custom_' + Date.now();
+  logger.info(`Adding custom command "${name}"`);
   state.customCommands.push({ id, name: name.toUpperCase(), desc: 'custom', template });
   lsSetJson('adpfc_customcmds', state.customCommands);
 }
 export function removeCustomCommand(id) {
+  logger.info(`Removing custom command: ${id}`);
   state.customCommands = state.customCommands.filter(c => c.id !== id);
   lsSetJson('adpfc_customcmds', state.customCommands);
 }
@@ -268,21 +297,24 @@ export function parseBannedInput(raw) {
     const parsed = JSON.parse(raw);
     if (Array.isArray(parsed)) {
       words = parsed.map(w => String(w).trim().toLowerCase()).filter(Boolean);
+      logger.debug(`Parsed ${words.length} words from JSON array.`);
       return words;
     }
   } catch(e) {}
   // Try comma-separated
   if (raw.includes(',')) {
     words = raw.split(',').map(w => w.trim().replace(/["\[\]]/g, '').toLowerCase()).filter(Boolean);
+    logger.debug(`Parsed ${words.length} words from comma-separated list.`);
     return words;
   }
   // Line-by-line
   words = raw.split('\n').map(w => w.trim().replace(/["\[\],]/g, '').toLowerCase()).filter(Boolean);
+  logger.debug(`Parsed ${words.length} words from line-by-line list.`);
   return words;
 }
 
 // ---- HELPERS ----
-function ls(key) { try { return localStorage.getItem(key); } catch(e) { return null; } }
-function lsSet(key, val) { try { localStorage.setItem(key, val || ''); } catch(e) {} }
-function lsJson(key) { try { return JSON.parse(localStorage.getItem(key)); } catch(e) { return null; } }
-function lsSetJson(key, val) { try { localStorage.setItem(key, JSON.stringify(val)); } catch(e) {} }
+function ls(key) { try { return localStorage.getItem(key); } catch(e) { logger.error(`localStorage getItem failed for key "${key}":`, e); return null; } }
+function lsSet(key, val) { try { localStorage.setItem(key, val || ''); } catch(e) { logger.error(`localStorage setItem failed for key "${key}":`, e); } }
+function lsJson(key) { try { return JSON.parse(localStorage.getItem(key)); } catch(e) { /* logger.debug(`localStorage getItem (JSON) failed for key "${key}":`, e); */ return null; } }
+function lsSetJson(key, val) { try { localStorage.setItem(key, JSON.stringify(val)); } catch(e) { logger.error(`localStorage setItem (JSON) failed for key "${key}":`, e); } }

@@ -1,5 +1,6 @@
 // js/app.js — Main application
 
+import { logger } from './logger.js';
 import {
   loadState, saveState, saveChats, getState,
   AVAILABLE_MODELS,
@@ -145,7 +146,7 @@ function setupSidebar() {
       saveChats();
       refreshAll();
       showToast(`Импортировано ${newChats.length} чатов`, 'ok');
-    } catch(err) {
+    } catch (err) {
       showToast('Ошибка: ' + err.message, 'err');
     }
     e.target.value = '';
@@ -193,7 +194,7 @@ function handleCommandClick(text) {
 // ============================================================
 function setupInputArea() {
   const textarea = document.getElementById('msgTextarea');
-  const sendBtn  = document.getElementById('sendBtn');
+  const sendBtn = document.getElementById('sendBtn');
 
   textarea.addEventListener('input', () => {
     autoResizeTextarea(textarea);
@@ -265,7 +266,7 @@ async function send() {
     addMessage(chatId, 'model', response);
     appendMessage({ role: 'model', text: response, model: activeModel }, handleRevise, handleRegen, handleCopy);
     refreshSidebar();
-  } catch(err) {
+  } catch (err) {
     hideTyping();
     showToast('Ошибка: ' + err.message, 'err');
     // Remove failed user message from store
@@ -455,10 +456,17 @@ function setupGlobalSettings() {
       data.forEach(w => addGlobalBanned(String(w)));
       renderBannedTags('globalBannedTags', S.globalBanned, removeAndRefreshGlobal);
       showToast(`Импортировано: ${data.length} слов`, 'ok');
-    } catch(err) {
+    } catch (err) {
       showToast('Ошибка: ' + err.message, 'err');
     }
     e.target.value = '';
+  };
+
+  // Export Logs
+  const exportLogsBtn = document.getElementById('exportLogsBtn');
+  if (exportLogsBtn) exportLogsBtn.onclick = () => {
+    downloadText('artist_debug.log', logger.getLogs());
+    showToast('Логи сохранены', 'ok');
   };
 
   // Custom commands
@@ -576,14 +584,14 @@ function setupChatSettings() {
     const lines = chat.messages.map(m =>
       `[${m.role.toUpperCase()}] ${new Date(m.ts || 0).toLocaleString('ru')}\n${m.text}\n`
     ).join('\n---\n\n');
-    downloadText(`${chat.title.replace(/[^\w\sА-яа-я]/g,'_')}.txt`, lines);
+    downloadText(`${chat.title.replace(/[^\w\sА-яа-я]/g, '_')}.txt`, lines);
     showToast('Экспорт .txt готов', 'ok');
   };
 
   document.getElementById('exportChatJsonBtn').onclick = () => {
     const chat = getCurrentChat();
     if (!chat) return;
-    downloadJson(`${chat.title.replace(/[^\w\sА-яа-я]/g,'_')}.json`, chat);
+    downloadJson(`${chat.title.replace(/[^\w\sА-яа-я]/g, '_')}.json`, chat);
     showToast('Экспорт .json готов', 'ok');
   };
 }

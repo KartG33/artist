@@ -1,7 +1,10 @@
 // js/ui.js — UI rendering helpers
 
+import { logger } from './logger.js';
+
 // ---- TOAST ----
 export function showToast(msg, type = '') {
+  logger.debug(`Showing toast: "${msg}" (type: ${type})`);
   const wrap = document.getElementById('toastWrap');
   const t = document.createElement('div');
   t.className = 'toast' + (type ? ` ${type}` : '');
@@ -35,6 +38,7 @@ function escHtml(s) {
 
 // ---- RENDER MESSAGES ----
 export function renderMessages(messages, onRevise, onRegen, onCopy) {
+  logger.debug(`Rendering ${messages.length} messages.`);
   const el = document.getElementById('messages');
   el.innerHTML = '';
 
@@ -50,6 +54,7 @@ export function renderMessages(messages, onRevise, onRegen, onCopy) {
 }
 
 export function appendMessage(msg, onRevise, onRegen, onCopy) {
+  logger.debug(`Appending ${msg.role} message.`);
   // Remove welcome if present
   const w = document.getElementById('welcome');
   if (w) w.remove();
@@ -88,6 +93,7 @@ function makeMsgEl(msg, idx, onRevise, onRegen, onCopy) {
 }
 
 function makeWelcome() {
+  logger.debug('Rendering welcome screen.');
   const div = document.createElement('div');
   div.className = 'welcome';
   div.id = 'welcome';
@@ -105,6 +111,7 @@ function makeWelcome() {
 
 // ---- TYPING INDICATOR ----
 export function showTyping() {
+  logger.debug('Showing typing indicator.');
   const el = document.getElementById('messages');
   const w = document.getElementById('welcome');
   if (w) w.remove();
@@ -121,12 +128,14 @@ export function showTyping() {
 }
 
 export function hideTyping() {
+  logger.debug('Hiding typing indicator.');
   const el = document.getElementById('typing-indicator');
   if (el) el.remove();
 }
 
 // ---- HISTORY ----
 export function renderHistory(chats, currentId, onSelect, onRename, onDelete) {
+  logger.debug(`Rendering history for ${chats.length} chats.`);
   const el = document.getElementById('historyList');
   el.innerHTML = '';
 
@@ -163,6 +172,7 @@ export function renderHistory(chats, currentId, onSelect, onRename, onDelete) {
 
 // ---- COMMANDS ----
 export function renderCommands(defaultCmds, customCmds, artist, onCmd) {
+  logger.debug(`Rendering ${defaultCmds.length + customCmds.length} commands.`);
   const grid = document.getElementById('cmdGrid');
   grid.innerHTML = '';
 
@@ -226,10 +236,12 @@ export function scrollBottom() {
 
 // ---- MODAL HELPERS ----
 export function openModal(id) {
+  logger.debug(`Opening modal: #${id}`);
   const el = document.getElementById(id);
   if (el) el.classList.remove('hidden');
 }
 export function closeModal(id) {
+  logger.debug(`Closing modal: #${id}`);
   const el = document.getElementById(id);
   if (el) el.classList.add('hidden');
 }
@@ -241,6 +253,7 @@ export function initTabs(modalEl) {
       tabs.forEach(t => t.classList.remove('active'));
       tab.classList.add('active');
       const target = tab.dataset.tab;
+      logger.debug(`Switching to tab "${target}" in modal.`);
       modalEl.querySelectorAll('.tab-content').forEach(tc => {
         const id = tc.id;
         // find suffix after last -
@@ -255,6 +268,7 @@ export function initTabs(modalEl) {
 
 // ---- CONFIRM DIALOG ----
 export function showConfirm(title, text) {
+  logger.debug(`Showing confirm dialog: "${title}"`);
   return new Promise(resolve => {
     document.getElementById('confirmTitle').textContent = title;
     document.getElementById('confirmText').textContent = text;
@@ -266,6 +280,7 @@ export function showConfirm(title, text) {
     function cleanup(result) {
       closeModal('confirmModal');
       ok.onclick = null; cancel.onclick = null;
+      logger.debug(`Confirm dialog resolved with: ${result}`);
       resolve(result);
     }
     ok.onclick = () => cleanup(true);
@@ -275,6 +290,7 @@ export function showConfirm(title, text) {
 
 // ---- RENAME DIALOG ----
 export function showRenameDialog(currentTitle) {
+  logger.debug(`Showing rename dialog for: "${currentTitle}"`);
   return new Promise(resolve => {
     document.getElementById('renameInput').value = currentTitle;
     openModal('renameModal');
@@ -289,6 +305,7 @@ export function showRenameDialog(currentTitle) {
       closeModal('renameModal');
       save.onclick = null; cancel.onclick = null;
       input.onkeydown = null;
+      logger.debug(`Rename dialog resolved with: ${result}`);
       resolve(result);
     }
     save.onclick = () => cleanup(input.value.trim() || currentTitle);
@@ -302,6 +319,7 @@ export function showRenameDialog(currentTitle) {
 
 // ---- DOWNLOAD ----
 export function downloadText(filename, content) {
+  logger.debug(`Downloading text file: ${filename}`);
   const a = document.createElement('a');
   a.href = URL.createObjectURL(new Blob([content], { type: 'text/plain' }));
   a.download = filename;
@@ -309,6 +327,7 @@ export function downloadText(filename, content) {
 }
 
 export function downloadJson(filename, data) {
+  logger.debug(`Downloading JSON file: ${filename}`);
   const a = document.createElement('a');
   a.href = URL.createObjectURL(new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' }));
   a.download = filename;
@@ -316,13 +335,24 @@ export function downloadJson(filename, data) {
 }
 
 export function readJsonFile(file) {
+  logger.debug(`Reading JSON file: ${file.name}`);
   return new Promise((resolve, reject) => {
     const r = new FileReader();
     r.onload = e => {
-      try { resolve(JSON.parse(e.target.result)); }
-      catch(err) { reject(new Error('Неверный JSON файл')); }
+      try {
+        const result = JSON.parse(e.target.result);
+        logger.debug('Successfully parsed JSON file.');
+        resolve(result);
+      }
+      catch(err) {
+        logger.error('Failed to parse JSON file:', err);
+        reject(new Error('Неверный JSON файл'));
+      }
     };
-    r.onerror = () => reject(new Error('Ошибка чтения файла'));
+    r.onerror = () => {
+      logger.error('Failed to read file.');
+      reject(new Error('Ошибка чтения файла'));
+    };
     r.readAsText(file);
   });
 }

@@ -1,5 +1,7 @@
 // js/api.js — Gemini API
 
+import { logger } from './logger.js';
+
 // Models with "thinking: true" don't accept temperature param — causes 400
 const THINKING_MODELS = [
   'gemini-2.5-flash', 'gemini-2.5-flash-lite', 'gemini-2.5-pro',
@@ -9,6 +11,10 @@ const THINKING_MODELS = [
 ];
 
 export async function callGemini({ apiKey, model, systemPrompt, messages }) {
+  logger.info(`Calling Gemini with model: ${model}`);
+  logger.debug('System prompt:', systemPrompt.slice(0, 100) + '...');
+  logger.debug('Messages count:', messages.length);
+
   const contents = messages.map(m => ({
     role: m.role === 'user' ? 'user' : 'model',
     parts: [{ text: m.text }]
@@ -27,6 +33,8 @@ export async function callGemini({ apiKey, model, systemPrompt, messages }) {
 
   const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
 
+  logger.debug('Request body:', { ...body, system_instruction: '...' });
+
   const res = await fetch(url, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
@@ -36,6 +44,7 @@ export async function callGemini({ apiKey, model, systemPrompt, messages }) {
   if (!res.ok) {
     const err = await res.json().catch(() => ({}));
     const msg = err?.error?.message || `HTTP ${res.status}`;
+    logger.error(`Gemini API error: ${res.status}`, msg);
     if (res.status === 400 && msg.includes('API_KEY')) throw new Error('Неверный API ключ');
     if (res.status === 403) throw new Error('Доступ запрещён. Проверь ключ');
     if (res.status === 429) throw new Error('Лимит запросов. Подожди немного');
@@ -43,18 +52,15 @@ export async function callGemini({ apiKey, model, systemPrompt, messages }) {
   }
 
   const data = await res.json();
+  logger.debug('Gemini response data:', data);
 
   // Check for safety blocks
   const candidate = data?.candidates?.[0];
   if (!candidate) {
     const reason = data?.promptFeedback?.blockReason;
-    throw new Error(reason ? `Заблокировано: ${reason}` : 'Пустой ответ от модели');
-  }
-  if (candidate.finishReason === 'SAFETY') {
-    throw new Error('Ответ заблокирован фильтром безопасности');
+    logger.warn('Gemini response blocked:', reason);
+    throw new Error(`Ответ заблокирован: ${reason || 'неизвестная причина'}`);
   }
 
-  const text = candidate?.content?.parts?.[0]?.text;
-  if (!text) throw new Error('Пустой ответ от модели');
-  return text;
+  return candidate.content.parts.map(p => p.text).join('');
 }
