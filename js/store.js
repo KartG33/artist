@@ -280,7 +280,7 @@ export function buildSystemPrompt(chatId) {
   ];
 
   if (allBanned.length > 0) {
-    prompt += `\n\n// BANNED WORDS & PHRASES — NEVER use these in any generated lyrics or content:\n// ${allBanned.join(', ')}`;
+    prompt += `\n\n// BANNED WORDS — ABSOLUTE PROHIBITION:\n// The following words are STRICTLY FORBIDDEN in any generated output — lyrics, concepts, profiles, style strings. Do NOT use them directly, do NOT use obvious variants or synonyms that carry the same aesthetic feel. Their presence in output = complete failure of the task.\n// ${allBanned.join(', ')}`;
   }
   return prompt;
 }

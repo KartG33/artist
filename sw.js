@@ -1,5 +1,5 @@
 // sw.js — Service Worker (ADP-FC v16 Studio)
-const CACHE_NAME = 'artist-v3';
+const CACHE_NAME = 'artist-v4';
 
 const ASSETS = [
   './',
@@ -18,7 +18,7 @@ self.addEventListener('install', e => {
   e.waitUntil(
     caches.open(CACHE_NAME)
       .then(cache => cache.addAll(ASSETS.map(a => new Request(a, { cache: 'reload' }))))
-      .catch(() => {}) // don't fail install if fonts unavailable
+      .catch(() => { }) // don't fail install if fonts unavailable
   );
   self.skipWaiting();
 });
